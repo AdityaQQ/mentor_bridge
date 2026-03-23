@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+{% block title %}Analytics — MentorBridge{% endblock %}
+{% block page_title %}Analytics{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="page-header fade-up">
+  <h2>Program Analytics</h2>
+  <p>Insights across your entire mentorship program</p>
+</div>
+
+<!-- KPI Row -->
+<div class="stats-grid fade-up delay-1">
+  <div class="stat-card">
+    <div class="stat-icon"><i class="fas fa-clipboard-list"></i></div>
+    <div class="stat-number">{{ total_issues }}</div>
+    <div class="stat-label">Total Issues</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon"><i class="fas fa-check-double"></i></div>
+    <div class="stat-number" style="color:var(--success)">{{ status_data.resolved }}</div>
+    <div class="stat-label">Resolved</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon"><i class="fas fa-users"></i></div>
+    <div class="stat-number">{{ total_mentees }}</div>
+    <div class="stat-label">Active Mentees</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon"><i class="fas fa-clock"></i></div>
+    <div class="stat-number">{{ avg_resolve_days }}</div>
+    <div class="stat-label">Avg Days to Resolve</div>
+  </div>
+  <div class="stat-card stat-urgent">
+    <div class="stat-icon"><i class="fas fa-fire"></i></div>
+    <div class="stat-number">{{ status_data.open }}</div>
+    <div class="stat-label">Still Open</div>
+  </div>
+</div>
+
+<!-- Charts Row 1 -->
+<div class="grid-2 fade-up delay-2 mb-3">
+  <div class="card">
+    <div class="card-header"><span><i class="fas fa-chart-line" style="margin-right:8px;opacity:0.5"></i>Issues Over Last 14 Days</span></div>
+    <div class="card-body"><canvas id="lineChart" height="220"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><span><i class="fas fa-chart-pie" style="margin-right:8px;opacity:0.5"></i>Issues by Status</span></div>
+    <div class="card-body" style="display:flex;align-items:center;justify-content:center">
+      <canvas id="donutChart" style="max-height:220px;max-width:220px"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Charts Row 2 -->
+<div class="grid-2 fade-up delay-3 mb-3">
+  <div class="card">
+    <div class="card-header"><span><i class="fas fa-chart-bar" style="margin-right:8px;opacity:0.5"></i>Issues by Priority</span></div>
+    <div class="card-body"><canvas id="barChart" height="200"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><span><i class="fas fa-tags" style="margin-right:8px;opacity:0.5"></i>Issues by Category</span></div>
+    <div class="card-body"><canvas id="catChart" height="200"></canvas></div>
+  </div>
+</div>
+
+<!-- Mentee Performance Table -->
+<div class="card fade-up" style="animation-delay:0.2s">
+  <div class="card-header"><span><i class="fas fa-medal" style="margin-right:8px;opacity:0.5"></i>Mentee Issue Summary</span></div>
+  <div class="card-body" style="padding:0">
+    {% if mentee_stats %}
+    <table class="data-table">
+      <thead>
+        <tr><th>Mentee</th><th>Total Issues</th><th>Open</th><th>Resolved</th><th>Resolution Rate</th></tr>
+      </thead>
+      <tbody>
+        {% for ms in mentee_stats %}
+        <tr>
+          <td style="font-weight:600;font-size:0.875rem">{{ ms.name }}</td>
+          <td>{{ ms.total }}</td>
+          <td>
+            {% if ms.open > 0 %}
+            <span class="badge badge-open">{{ ms.open }}</span>
+            {% else %}<span class="text-muted">0</span>{% endif %}
+          </td>
+          <td>
+            {% if ms.resolved > 0 %}
+            <span class="badge badge-resolved">{{ ms.resolved }}</span>
+            {% else %}<span class="text-muted">0</span>{% endif %}
+          </td>
+          <td>
+            {% if ms.total > 0 %}
+            {% set pct = ((ms.resolved / ms.total) * 100)|round|int %}
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,0.08);overflow:hidden">
+                <div style="height:100%;width:{{ pct }}%;background:{% if pct >= 70 %}var(--success){% elif pct >= 40 %}var(--warning){% else %}var(--danger){% endif %};border-radius:3px"></div>
+              </div>
+              <span class="text-sm" style="min-width:32px">{{ pct }}%</span>
+            </div>
+            {% else %}—{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state"><i class="fas fa-users"></i> No mentee data yet</div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+const isDark = document.body.classList.contains('mentor-theme');
+const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+const textColor = isDark ? 'rgba(232,234,240,0.5)' : 'rgba(26,20,16,0.5)';
+const accent = isDark ? '#4f8ef7' : '#d4622a';
+
+Chart.defaults.font.family = "'DM Sans', sans-serif";
+Chart.defaults.color = textColor;
+
+// Line Chart
+new Chart(document.getElementById('lineChart'), {
+  type: 'line',
+  data: {
+    labels: {{ days_labels | tojson }},
+    datasets: [{
+      label: 'Issues Raised',
+      data: {{ days_data | tojson }},
+      borderColor: accent,
+      backgroundColor: isDark ? 'rgba(79,142,247,0.08)' : 'rgba(212,98,42,0.08)',
+      borderWidth: 2,
+      fill: true,
+      tension: 0.4,
+      pointRadius: 4,
+      pointBackgroundColor: accent,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: gridColor }, ticks: { maxTicksLimit: 7 } },
+      y: { grid: { color: gridColor }, beginAtZero: true, ticks: { stepSize: 1 } }
+    }
+  }
+});
+
+// Donut Chart
+new Chart(document.getElementById('donutChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Open', 'In Progress', 'Resolved', 'Closed'],
+    datasets: [{
+      data: [{{ status_data.open }}, {{ status_data.in_progress }}, {{ status_data.resolved }}, {{ status_data.closed }}],
+      backgroundColor: ['#4f8ef7', '#f59e0b', '#22c55e', '#6b7a99'],
+      borderWidth: 0, borderRadius: 4,
+    }]
+  },
+  options: {
+    responsive: true,
+    cutout: '65%',
+    plugins: { legend: { position: 'bottom', labels: { padding: 16, usePointStyle: true } } }
+  }
+});
+
+// Bar Chart
+new Chart(document.getElementById('barChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Low', 'Medium', 'High', 'Urgent'],
+    datasets: [{
+      data: [{{ priority_data.low }}, {{ priority_data.medium }}, {{ priority_data.high }}, {{ priority_data.urgent }}],
+      backgroundColor: ['#22c55e', '#f59e0b', '#ef4444', '#dc2626'],
+      borderRadius: 6, borderWidth: 0,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { display: false } },
+      y: { grid: { color: gridColor }, beginAtZero: true, ticks: { stepSize: 1 } }
+    }
+  }
+});
+
+// Category chart
+const catLabels = [{% for c in categories %}"{{ c[0] }}"{% if not loop.last %},{% endif %}{% endfor %}];
+const catData   = [{% for c in categories %}{{ c[1] }}{% if not loop.last %},{% endif %}{% endfor %}];
+const catColors = ['#4f8ef7','#7c5cfc','#f59e0b','#22c55e','#ef4444','#ec4899','#06b6d4'];
+new Chart(document.getElementById('catChart'), {
+  type: 'bar',
+  data: {
+    labels: catLabels,
+    datasets: [{
+      data: catData,
+      backgroundColor: catColors,
+      borderRadius: 6, borderWidth: 0,
+    }]
+  },
+  options: {
+    responsive: true,
+    indexAxis: 'y',
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: gridColor }, beginAtZero: true, ticks: { stepSize: 1 } },
+      y: { grid: { display: false } }
+    }
+  }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block title %}My Dashboard — MentorBridge{% endblock %}
+{% block page_title %}My Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header fade-up">
+  <h2>Hi, {{ user.name.split()[0] }} 🌱</h2>
+  <p>Track your issues and stay connected with your mentor</p>
+</div>
+
+<!-- Stats -->
+<div class="stats-grid fade-up delay-1">
+  <div class="stat-card">
+    <div class="stat-icon"><i class="fas fa-list"></i></div>
+    <div class="stat-number">{{ issues|length }}</div>
+    <div class="stat-label">Total Issues</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon"><i class="fas fa-door-open"></i></div>
+    <div class="stat-number">{{ issues|selectattr('status','eq','open')|list|length }}</div>
+    <div class="stat-label">Open</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+    <div class="stat-number" style="color:var(--success)">{{ issues|selectattr('status','eq','resolved')|list|length }}</div>
+    <div class="stat-label">Resolved</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon"><i class="fas fa-spinner"></i></div>
+    <div class="stat-number" style="color:var(--warning)">{{ issues|selectattr('status','eq','in_progress')|list|length }}</div>
+    <div class="stat-label">In Progress</div>
+  </div>
+</div>
+
+<div class="grid-2 fade-up delay-2">
+  <!-- My Issues -->
+  <div class="card" id="issues" style="grid-column: 1 / -1">
+    <div class="card-header">
+      <span><i class="fas fa-exclamation-circle" style="margin-right:8px;opacity:0.5"></i>My Issues</span>
+      <a href="{{ url_for('new_issue') }}" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Raise Issue</a>
+    </div>
+    <div class="card-body" style="padding:0">
+      {% if issues %}
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>Assigned To</th>
+            <th>Date</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for issue in issues %}
+          <tr class="issue-row" onclick="location.href='{{ url_for('view_issue', issue_id=issue.id) }}'">
+            <td>
+              <div style="font-weight:600;font-size:0.875rem">{{ issue.title[:55] }}{% if issue.title|length > 55 %}…{% endif %}</div>
+              <div class="text-muted text-sm">{{ issue.category }}</div>
+            </td>
+            <td><span class="badge badge-{{ issue.priority }}">{{ issue.priority }}</span></td>
+            <td><span class="badge badge-{{ issue.status }}">{{ issue.status.replace('_',' ') }}</span></td>
+            <td class="text-sm">
+              {% if issue.assignee %}
+                <div class="flex items-center gap-1">
+                  <div class="avatar" style="width:24px;height:24px;font-size:0.6rem">{{ issue.assignee.avatar_initial or issue.assignee.name[0] }}</div>
+                  {{ issue.assignee.name.split()[0] }}
+                </div>
+              {% else %}
+                <span class="text-muted">Unassigned</span>
+              {% endif %}
+            </td>
+            <td class="text-muted text-sm">{{ time_ago(issue.created_at) }}</td>
+            <td><i class="fas fa-chevron-right text-muted text-sm"></i></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty-state">
+        <i class="fas fa-inbox"></i>
+        <div style="font-weight:600;margin-bottom:8px">No issues raised yet</div>
+        <a href="{{ url_for('new_issue') }}" class="btn btn-primary btn-sm">Raise your first issue</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="grid-2 mt-2 fade-up delay-3">
+  <!-- Announcements -->
+  <div class="card">
+    <div class="card-header">
+      <span><i class="fas fa-bullhorn" style="margin-right:8px;opacity:0.5"></i>Announcements</span>
+    </div>
+    <div class="card-body">
+      {% for ann in announcements %}
+      <div class="announcement-card">
+        {% if ann.is_pinned %}<span class="pinned-dot"></span>{% endif %}
+        <div style="font-weight:700;font-size:0.9rem;margin-bottom:4px">{{ ann.title }}</div>
+        <div class="text-muted text-sm" style="line-height:1.6">{{ ann.content[:150] }}{% if ann.content|length > 150 %}…{% endif %}</div>
+        <div class="flex items-center justify-between mt-1">
+          <span class="text-muted text-sm">by {{ ann.author.name.split()[0] }} · {{ time_ago(ann.created_at) }}</span>
+        </div>
+      </div>
+      {% else %}
+      <div class="empty-state" style="padding:24px"><i class="fas fa-bullhorn"></i> No announcements yet</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- My Mentors -->
+  <div class="card">
+    <div class="card-header">
+      <span><i class="fas fa-graduation-cap" style="margin-right:8px;opacity:0.5"></i>My Mentors</span>
+    </div>
+    <div class="card-body" style="padding:8px">
+      {% for mentor in mentors %}
+      <div class="flex items-center gap-2" style="padding:10px 12px;border-radius:8px;margin-bottom:2px">
+        <div class="avatar">{{ mentor.avatar_initial or mentor.name[0] }}</div>
+        <div style="flex:1">
+          <div style="font-weight:600;font-size:0.875rem">{{ mentor.name }}</div>
+          <div class="text-muted text-sm">{{ mentor.expertise[:35] if mentor.expertise else 'Mentor' }}</div>
+        </div>
+        <a href="{{ url_for('conversation', contact_id=mentor.id) }}" class="btn btn-primary btn-sm">
+          <i class="fas fa-comment"></i> Chat
+        </a>
+      </div>
+      {% else %}
+      <div class="empty-state" style="padding:24px"><i class="fas fa-user-slash"></i> No mentors available</div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

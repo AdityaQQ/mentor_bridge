@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Search — MentorBridge{% endblock %}
+{% block page_title %}Search{% endblock %}
+
+{% block content %}
+<div class="page-header fade-up">
+  <h2>Search Results</h2>
+  <p>{% if q %}Results for "<strong>{{ q }}</strong>"{% else %}Enter a search term above{% endif %}</p>
+</div>
+
+{% if q %}
+  <!-- Issues -->
+  <div class="card mb-3 fade-up delay-1">
+    <div class="card-header">
+      <span><i class="fas fa-exclamation-circle" style="margin-right:8px;opacity:0.5"></i>Issues ({{ issue_results|length }})</span>
+    </div>
+    <div class="card-body" style="padding:0">
+      {% if issue_results %}
+      <table class="data-table">
+        <thead><tr><th>Title</th><th>Priority</th><th>Status</th><th>Date</th></tr></thead>
+        <tbody>
+          {% for issue in issue_results %}
+          <tr class="issue-row" onclick="location.href='{{ url_for('view_issue', issue_id=issue.id) }}'">
+            <td>
+              <div style="font-weight:600;font-size:0.875rem">{{ issue.title }}</div>
+              <div class="text-muted text-sm">{{ issue.description[:80] }}…</div>
+            </td>
+            <td><span class="badge badge-{{ issue.priority }}">{{ issue.priority }}</span></td>
+            <td><span class="badge badge-{{ issue.status }}">{{ issue.status.replace('_',' ') }}</span></td>
+            <td class="text-muted text-sm">{{ time_ago(issue.created_at) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty-state" style="padding:24px"><i class="fas fa-search"></i> No issues found</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Users (mentor only) -->
+  {% if user.role == 'mentor' and user_results %}
+  <div class="card fade-up delay-2">
+    <div class="card-header"><span><i class="fas fa-users" style="margin-right:8px;opacity:0.5"></i>Users ({{ user_results|length }})</span></div>
+    <div class="card-body" style="padding:8px">
+      {% for u in user_results %}
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;margin-bottom:4px">
+        <div class="avatar">{{ u.avatar_initial or u.name[0] }}</div>
+        <div style="flex:1">
+          <div style="font-weight:600;font-size:0.875rem">{{ u.name }}</div>
+          <div class="text-muted text-sm">{{ u.email }} · {{ u.role }}</div>
+        </div>
+        {% if u.role != 'mentor' or u.id != user.id %}
+        <a href="{{ url_for('conversation', contact_id=u.id) }}" class="btn btn-sm btn-primary"><i class="fas fa-comment"></i></a>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+{% else %}
+<div class="card fade-up delay-1">
+  <div class="empty-state">
+    <i class="fas fa-search"></i>
+    <div style="font-weight:600;margin-bottom:6px">Search for anything</div>
+    <div class="text-muted text-sm">Try issue titles, descriptions, or user names</div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

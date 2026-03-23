@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block title %}Mentor Dashboard — MentorBridge{% endblock %}
+{% block page_title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header fade-up">
+  <h2>Good day, {{ user.name.split()[0] }} 👋</h2>
+  <p>Here's everything happening across your mentorship program</p>
+</div>
+
+<!-- Stats -->
+<div class="stats-grid fade-up delay-1">
+  <div class="stat-card">
+    <div class="stat-icon"><i class="fas fa-exclamation-circle"></i></div>
+    <div class="stat-number">{{ open_count }}</div>
+    <div class="stat-label">Open Issues</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon"><i class="fas fa-spinner"></i></div>
+    <div class="stat-number">{{ in_progress_count }}</div>
+    <div class="stat-label">In Progress</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+    <div class="stat-number" style="color:var(--success)">{{ resolved_count }}</div>
+    <div class="stat-label">Resolved</div>
+  </div>
+  <div class="stat-card stat-urgent">
+    <div class="stat-icon"><i class="fas fa-fire"></i></div>
+    <div class="stat-number">{{ urgent_count }}</div>
+    <div class="stat-label">Urgent</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon"><i class="fas fa-users"></i></div>
+    <div class="stat-number">{{ mentees|length }}</div>
+    <div class="stat-label">Mentees</div>
+  </div>
+</div>
+
+<div class="grid-2 fade-up delay-2">
+  <!-- All Issues -->
+  <div class="card" id="issues" style="grid-column: 1 / -1">
+    <div class="card-header">
+      <span><i class="fas fa-list" style="margin-right:8px;opacity:0.5"></i>All Issues</span>
+      <a href="{{ url_for('new_issue') }}" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> New</a>
+    </div>
+    <div class="card-body" style="padding:0">
+      {% if issues %}
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Raised By</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for issue in issues %}
+          <tr class="issue-row" onclick="location.href='{{ url_for('view_issue', issue_id=issue.id) }}'">
+            <td>
+              <div style="font-weight:600;font-size:0.875rem">{{ issue.title[:60] }}{% if issue.title|length > 60 %}…{% endif %}</div>
+              <div class="text-muted text-sm">{{ issue.category }}</div>
+            </td>
+            <td>
+              <div class="flex items-center gap-1">
+                <div class="avatar" style="width:26px;height:26px;font-size:0.65rem">{{ issue.raiser.avatar_initial or issue.raiser.name[0] }}</div>
+                <span class="text-sm">{{ issue.raiser.name.split()[0] }}</span>
+              </div>
+            </td>
+            <td><span class="badge badge-{{ issue.priority }}">{{ issue.priority }}</span></td>
+            <td><span class="badge badge-{{ issue.status }}">{{ issue.status.replace('_',' ') }}</span></td>
+            <td class="text-muted text-sm">{{ time_ago(issue.created_at) }}</td>
+            <td>
+              <form method="POST" action="{{ url_for('delete_issue', issue_id=issue.id) }}" onsubmit="return confirm('Delete this issue?')" onclick="event.stopPropagation()">
+                <button class="btn btn-sm" style="background:transparent;color:var(--danger);opacity:0.6" type="submit"><i class="fas fa-trash"></i></button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty-state"><i class="fas fa-inbox"></i> No issues yet</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="grid-2 mt-2 fade-up delay-3">
+  <!-- Announcements -->
+  <div class="card">
+    <div class="card-header">
+      <span><i class="fas fa-bullhorn" style="margin-right:8px;opacity:0.5"></i>Announcements</span>
+      <a href="{{ url_for('new_announcement') }}" class="btn btn-primary btn-sm">+ Post</a>
+    </div>
+    <div class="card-body">
+      {% for ann in announcements %}
+      <div class="announcement-card">
+        {% if ann.is_pinned %}<span class="pinned-dot"></span>{% endif %}
+        <div style="font-weight:700;font-size:0.9rem;margin-bottom:4px">{{ ann.title }}</div>
+        <div class="text-muted text-sm" style="line-height:1.6">{{ ann.content[:120] }}{% if ann.content|length > 120 %}…{% endif %}</div>
+        <div class="flex items-center justify-between mt-1">
+          <span class="text-muted text-sm">{{ time_ago(ann.created_at) }}</span>
+          <form method="POST" action="{{ url_for('delete_announcement', ann_id=ann.id) }}" onsubmit="return confirm('Delete?')">
+            <button type="submit" class="btn btn-sm" style="background:transparent;color:var(--danger);opacity:0.5;padding:2px 6px"><i class="fas fa-trash"></i></button>
+          </form>
+        </div>
+      </div>
+      {% else %}
+      <div class="empty-state" style="padding:24px"><i class="fas fa-bullhorn"></i> No announcements</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Mentees -->
+  <div class="card">
+    <div class="card-header">
+      <span><i class="fas fa-users" style="margin-right:8px;opacity:0.5"></i>Mentees</span>
+      <a href="{{ url_for('manage_users') }}" class="btn btn-sm btn-outline" style="color:inherit">Manage All</a>
+    </div>
+    <div class="card-body" style="padding:8px">
+      {% for mentee in mentees[:8] %}
+      <div class="flex items-center gap-2" style="padding:10px 12px;border-radius:8px;margin-bottom:2px">
+        <div class="avatar">{{ mentee.avatar_initial or mentee.name[0] }}</div>
+        <div style="flex:1">
+          <div style="font-weight:600;font-size:0.875rem">{{ mentee.name }}</div>
+          <div class="text-muted text-sm">{{ mentee.expertise[:30] if mentee.expertise else 'No expertise listed' }}</div>
+        </div>
+        <span style="font-size:0.72rem;padding:2px 8px;border-radius:10px;{% if mentee.is_active %}background:rgba(34,197,94,0.1);color:#22c55e{% else %}background:rgba(239,68,68,0.1);color:#ef4444{% endif %}">
+          {{ 'Active' if mentee.is_active else 'Inactive' }}
+        </span>
+        <a href="{{ url_for('conversation', contact_id=mentee.id) }}" class="btn btn-sm" style="background:transparent;opacity:0.5;padding:4px 8px"><i class="fas fa-comment"></i></a>
+      </div>
+      {% else %}
+      <div class="empty-state" style="padding:24px"><i class="fas fa-user-slash"></i> No mentees yet</div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register — MentorBridge</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; min-height: 100vh; background: #07090f; color: #e8eaf0; display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
+
+.container { width: 100%; max-width: 520px; }
+.logo { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; text-align: center; margin-bottom: 32px; }
+.logo span { color: #4f8ef7; }
+
+.card {
+  background: #111827;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 40px;
+}
+.card h1 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; margin-bottom: 4px; }
+.card .subtitle { font-size: 0.85rem; color: rgba(232,234,240,0.4); margin-bottom: 28px; }
+
+.role-tabs { display: flex; gap: 8px; margin-bottom: 24px; background: rgba(255,255,255,0.05); padding: 5px; border-radius: 10px; }
+.role-tab {
+  flex: 1; padding: 9px;
+  border-radius: 7px; border: none; cursor: pointer;
+  font-size: 0.85rem; font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  background: transparent; color: rgba(232,234,240,0.4);
+  transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.role-tab.active { background: linear-gradient(135deg, #4f8ef7, #7c5cfc); color: #fff; }
+.role-tab[data-role="mentee"].active { background: linear-gradient(135deg, #d4622a, #f59e0b); }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px; color: rgba(232,234,240,0.45); }
+.input-wrap { position: relative; }
+.input-wrap i { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: rgba(232,234,240,0.25); font-size: 0.82rem; }
+.input-field {
+  width: 100%;
+  padding: 10px 13px 10px 36px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px; color: #e8eaf0;
+  font-size: 0.875rem; font-family: 'DM Sans', sans-serif;
+  outline: none; transition: border-color 0.15s;
+}
+.input-field:focus { border-color: #4f8ef7; background: rgba(79,142,247,0.05); }
+.input-field::placeholder { color: rgba(232,234,240,0.18); }
+textarea.input-field { padding-top: 10px; resize: vertical; min-height: 72px; }
+
+.btn-submit {
+  width: 100%; padding: 12px;
+  background: linear-gradient(135deg, #4f8ef7, #7c5cfc);
+  border: none; border-radius: 8px; color: #fff;
+  font-size: 0.9rem; font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer; margin-top: 4px;
+  transition: all 0.15s;
+}
+.btn-submit:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(79,142,247,0.35); }
+.btn-submit.mentee-btn { background: linear-gradient(135deg, #d4622a, #f59e0b); }
+
+.auth-footer { margin-top: 20px; text-align: center; font-size: 0.82rem; color: rgba(232,234,240,0.4); }
+.auth-footer a { color: #4f8ef7; text-decoration: none; font-weight: 600; }
+
+.alert { padding: 10px 14px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 16px; background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); display: flex; align-items: center; gap: 8px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="logo">Mentor<span>Bridge</span> 🌉</div>
+  <div class="card">
+    <h1>Create Account</h1>
+    <p class="subtitle">Join as a mentor or mentee</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in messages %}
+      <div class="alert"><i class="fas fa-exclamation-circle"></i> {{ msg }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <div class="role-tabs">
+      <button class="role-tab active" data-role="mentor" onclick="setRole('mentor')">🎓 Mentor</button>
+      <button class="role-tab" data-role="mentee" onclick="setRole('mentee')">🌱 Mentee</button>
+    </div>
+
+    <form method="POST">
+      <input type="hidden" name="role" id="roleInput" value="mentor">
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <div class="input-wrap">
+            <i class="fas fa-user"></i>
+            <input type="text" name="name" class="input-field" placeholder="Jane Smith" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <div class="input-wrap">
+            <i class="fas fa-envelope"></i>
+            <input type="email" name="email" class="input-field" placeholder="jane@email.com" required>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="input-wrap">
+          <i class="fas fa-lock"></i>
+          <input type="password" name="password" class="input-field" placeholder="Minimum 6 characters" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Expertise / Skills</label>
+        <div class="input-wrap">
+          <i class="fas fa-code"></i>
+          <input type="text" name="expertise" class="input-field" placeholder="e.g. Python, Data Science, Web Dev">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Short Bio</label>
+        <textarea name="bio" class="input-field" style="padding-left:13px" placeholder="Tell us a bit about yourself..."></textarea>
+      </div>
+
+      <button type="submit" class="btn-submit" id="submitBtn">Create Mentor Account</button>
+    </form>
+
+    <div class="auth-footer">
+      Already have an account? <a href="{{ url_for('login') }}">Sign in</a>
+    </div>
+  </div>
+</div>
+<script>
+function setRole(role) {
+  document.getElementById('roleInput').value = role;
+  document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`[data-role="${role}"]`).classList.add('active');
+  const btn = document.getElementById('submitBtn');
+  btn.textContent = `Create ${role.charAt(0).toUpperCase()+role.slice(1)} Account`;
+  btn.className = 'btn-submit' + (role === 'mentee' ? ' mentee-btn' : '');
+}
+</script>
+</body>
+</html>

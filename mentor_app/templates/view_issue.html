@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% block title %}{{ issue.title }} — MentorBridge{% endblock %}
+{% block page_title %}Issue Details{% endblock %}
+
+{% block content %}
+<div class="flex items-center gap-2 mb-3 fade-up" style="font-size:0.85rem">
+  <a href="{{ url_for('dashboard') }}" style="text-decoration:none;opacity:0.5">Dashboard</a>
+  <span style="opacity:0.3">›</span>
+  <span>{{ issue.title[:40] }}{% if issue.title|length > 40 %}…{% endif %}</span>
+</div>
+
+<div class="grid-2 fade-up delay-1" style="grid-template-columns: 2fr 1fr; align-items: start;">
+  <!-- Left: Issue Content & Comments -->
+  <div>
+    <div class="card mb-2">
+      <div class="card-header">
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;margin-bottom:6px">{{ issue.title }}</div>
+          <div class="flex items-center gap-1" style="flex-wrap:wrap">
+            <span class="badge badge-{{ issue.priority }}">{{ issue.priority }}</span>
+            <span class="badge badge-{{ issue.status }}">{{ issue.status.replace('_',' ') }}</span>
+            <span class="badge" style="background:rgba(124,92,252,0.1);color:#7c5cfc">{{ issue.category }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <p style="line-height:1.8;font-size:0.9rem;opacity:0.85;white-space:pre-wrap">{{ issue.description }}</p>
+
+        {% if issue.resolution_notes %}
+        <div style="margin-top:20px;padding:16px;border-radius:8px;background:rgba(34,197,94,0.07);border:1px solid rgba(34,197,94,0.15)">
+          <div style="font-weight:700;font-size:0.82rem;color:#22c55e;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px"><i class="fas fa-check-circle"></i> Resolution Notes</div>
+          <p style="font-size:0.9rem;line-height:1.7;white-space:pre-wrap">{{ issue.resolution_notes }}</p>
+        </div>
+        {% endif %}
+
+        <div class="flex items-center gap-2 mt-2" style="font-size:0.8rem;opacity:0.45">
+          <span>Raised by <strong>{{ issue.raiser.name }}</strong></span>
+          <span>·</span>
+          <span>{{ issue.created_at.strftime('%b %d, %Y at %I:%M %p') }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comments -->
+    <div class="card">
+      <div class="card-header"><span><i class="fas fa-comments" style="margin-right:8px;opacity:0.5"></i>Discussion ({{ comments|length }})</span></div>
+      <div class="card-body" style="padding:12px">
+        {% for comment in comments %}
+        <div style="display:flex;gap:12px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.05)">
+          <div class="avatar" style="flex-shrink:0">{{ comment.author.avatar_initial or comment.author.name[0] }}</div>
+          <div style="flex:1">
+            <div class="flex items-center gap-2 mb-1">
+              <span style="font-weight:700;font-size:0.85rem">{{ comment.author.name }}</span>
+              <span class="badge-role" style="font-size:0.65rem;padding:1px 7px;border-radius:10px">{{ comment.author.role }}</span>
+              <span class="text-muted text-sm">{{ time_ago(comment.created_at) }}</span>
+            </div>
+            <p style="font-size:0.875rem;line-height:1.7;opacity:0.8;white-space:pre-wrap">{{ comment.content }}</p>
+          </div>
+        </div>
+        {% else %}
+        <div class="empty-state" style="padding:24px"><i class="fas fa-comment-slash"></i> No comments yet</div>
+        {% endfor %}
+
+        <form method="POST" action="{{ url_for('add_comment', issue_id=issue.id) }}" style="margin-top:12px">
+          <div class="form-group" style="margin-bottom:10px">
+            <textarea name="content" class="input-field" rows="3" placeholder="Add a comment or update..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-paper-plane"></i> Comment</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: Sidebar -->
+  <div>
+    <!-- Mentor Update Panel -->
+    {% if user.role == 'mentor' %}
+    <div class="card mb-2">
+      <div class="card-header"><span><i class="fas fa-edit" style="margin-right:8px;opacity:0.5"></i>Update Issue</span></div>
+      <div class="card-body">
+        <form method="POST" action="{{ url_for('update_issue', issue_id=issue.id) }}">
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select name="status" class="input-field">
+              {% for s in ['open', 'in_progress', 'resolved', 'closed'] %}
+              <option value="{{ s }}" {% if issue.status == s %}selected{% endif %}>{{ s.replace('_',' ').title() }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Assign To</label>
+            <select name="assigned_to" class="input-field">
+              <option value="">Unassigned</option>
+              {% for mentor in mentors %}
+              <option value="{{ mentor.id }}" {% if issue.assigned_to == mentor.id %}selected{% endif %}>{{ mentor.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Resolution Notes</label>
+            <textarea name="resolution_notes" class="input-field" rows="3" placeholder="Steps taken, solution...">{{ issue.resolution_notes or '' }}</textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-sm" style="width:100%"><i class="fas fa-save"></i> Update Issue</button>
+        </form>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Info -->
+    <div class="card">
+      <div class="card-header"><span>Issue Info</span></div>
+      <div class="card-body">
+        <div style="font-size:0.82rem">
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
+            <span class="text-muted">Raised by</span>
+            <div class="flex items-center gap-1">
+              <div class="avatar" style="width:20px;height:20px;font-size:0.6rem">{{ issue.raiser.avatar_initial or issue.raiser.name[0] }}</div>
+              <span>{{ issue.raiser.name }}</span>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
+            <span class="text-muted">Assigned to</span>
+            <span>{{ issue.assignee.name if issue.assignee else 'Unassigned' }}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
+            <span class="text-muted">Priority</span>
+            <span class="badge badge-{{ issue.priority }}">{{ issue.priority }}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
+            <span class="text-muted">Status</span>
+            <span class="badge badge-{{ issue.status }}">{{ issue.status.replace('_',' ') }}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
+            <span class="text-muted">Category</span>
+            <span>{{ issue.category }}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0">
+            <span class="text-muted">Created</span>
+            <span>{{ issue.created_at.strftime('%b %d, %Y') }}</span>
+          </div>
+        </div>
+
+        <div class="mt-2">
+          <a href="{{ url_for('conversation', contact_id=issue.raiser.id if user.role == 'mentor' else (issue.assignee.id if issue.assignee else mentors[0].id if mentors else 0)) }}" 
+             class="btn btn-primary btn-sm" style="width:100%;justify-content:center">
+            <i class="fas fa-comment"></i> Message {{ 'Mentee' if user.role == 'mentor' else 'Mentor' }}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

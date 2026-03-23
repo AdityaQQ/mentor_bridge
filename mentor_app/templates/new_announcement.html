@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Post Announcement — MentorBridge{% endblock %}
+{% block page_title %}New Announcement{% endblock %}
+{% block content %}
+<div class="page-header fade-up">
+  <h2>Post Announcement</h2>
+  <p>Broadcast a message to all mentees</p>
+</div>
+<div class="card fade-up delay-1" style="max-width:620px">
+  <div class="card-header"><span><i class="fas fa-bullhorn" style="margin-right:8px;opacity:0.5"></i>Announcement</span></div>
+  <div class="card-body">
+    <form method="POST">
+      <div class="form-group">
+        <label class="form-label">Title *</label>
+        <input type="text" name="title" class="input-field" placeholder="Announcement title" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Message *</label>
+        <textarea name="content" class="input-field" rows="5" placeholder="Write your announcement..." required></textarea>
+      </div>
+      <div class="form-group" style="display:flex;align-items:center;gap:10px">
+        <input type="checkbox" name="is_pinned" id="pin" style="width:16px;height:16px;cursor:pointer">
+        <label for="pin" style="font-size:0.875rem;cursor:pointer">📌 Pin this announcement (show at top)</label>
+      </div>
+      <div class="flex gap-2">
+        <button type="submit" class="btn btn-primary"><i class="fas fa-bullhorn"></i> Post Announcement</button>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

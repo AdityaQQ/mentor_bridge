@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Messages — MentorBridge{% endblock %}
+{% block page_title %}Messages{% endblock %}
+
+{% block content %}
+<div class="fade-up" style="display:flex;gap:16px;height:calc(100vh - 140px);min-height:500px">
+  <!-- Contacts Sidebar -->
+  <div class="card" style="width:260px;flex-shrink:0;display:flex;flex-direction:column;overflow:hidden">
+    <div class="card-header" style="font-size:0.85rem">
+      <span>{{ 'Mentees' if user.role == 'mentor' else 'Mentors' }}</span>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:8px">
+      {% for contact in contacts %}
+      <a href="{{ url_for('conversation', contact_id=contact.id) }}"
+         style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;text-decoration:none;transition:background 0.1s;
+         {% if contact is defined and loop.index == 0 %}{% endif %}">
+        <div class="avatar" style="flex-shrink:0">{{ contact.avatar_initial or contact.name[0] }}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:600;font-size:0.875rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ contact.name }}</div>
+          <div class="text-muted text-sm">{{ contact.expertise[:25] if contact.expertise else contact.role }}</div>
+        </div>
+      </a>
+      {% else %}
+      <div class="empty-state" style="padding:24px;font-size:0.82rem">No contacts</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Chat Area -->
+  <div class="card" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+    {% if contact is defined %}
+    <div class="card-header" style="flex-shrink:0">
+      <div class="flex items-center gap-2">
+        <div class="avatar">{{ contact.avatar_initial or contact.name[0] }}</div>
+        <div>
+          <div style="font-weight:700">{{ contact.name }}</div>
+          <div class="text-muted text-sm">{{ contact.role.title() }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Messages -->
+    <div id="msgArea" style="flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px">
+      {% for msg in msgs %}
+      <div class="flex {% if msg.sender_id == user.id %}msg-out{% else %}msg-in{% endif %}" style="display:flex;flex-direction:column;{% if msg.sender_id == user.id %}align-items:flex-end{% else %}align-items:flex-start{% endif %}">
+        <div class="msg-bubble">{{ msg.content }}</div>
+        <div class="text-muted" style="font-size:0.7rem;margin-top:4px">{{ time_ago(msg.created_at) }}</div>
+      </div>
+      {% else %}
+      <div class="empty-state" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center">
+        <i class="fas fa-comment-dots" style="font-size:2rem;margin-bottom:12px"></i>
+        <div>No messages yet. Start the conversation!</div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Input -->
+    <div style="padding:16px;border-top:1px solid rgba(255,255,255,0.07);flex-shrink:0">
+      <form method="POST" style="display:flex;gap:10px">
+        <input type="text" name="content" class="input-field" style="flex:1" placeholder="Type a message..." autocomplete="off" required>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i></button>
+      </form>
+    </div>
+
+    {% else %}
+    <div class="empty-state" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center">
+      <i class="fas fa-comments" style="font-size:3rem;margin-bottom:16px"></i>
+      <div style="font-size:1rem;font-weight:600;margin-bottom:8px">Select a conversation</div>
+      <div class="text-muted text-sm">Choose a contact from the left to start messaging</div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  const msgArea = document.getElementById('msgArea');
+  if (msgArea) msgArea.scrollTop = msgArea.scrollHeight;
+</script>
+{% endblock %}

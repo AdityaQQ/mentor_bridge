@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MentorConnect — Grow Together</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: #07090f;
+  color: #e8eaf0;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+.bg-grid {
+  position: fixed; inset: 0; z-index: 0;
+  background-image:
+    linear-gradient(rgba(79,142,247,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79,142,247,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+.bg-glow {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  z-index: 0;
+}
+.glow-1 { width: 600px; height: 600px; background: rgba(79,142,247,0.08); top: -200px; right: -100px; }
+.glow-2 { width: 400px; height: 400px; background: rgba(124,92,252,0.07); bottom: -100px; left: -100px; }
+
+nav {
+  position: relative; z-index: 10;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 60px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.nav-logo { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; }
+.nav-logo span { color: #4f8ef7; }
+.nav-actions { display: flex; gap: 12px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-size: 0.875rem; font-weight: 600;
+  cursor: pointer; border: none; text-decoration: none;
+  transition: all 0.15s ease;
+  font-family: 'DM Sans', sans-serif;
+}
+.btn-ghost { background: transparent; color: #e8eaf0; border: 1px solid rgba(255,255,255,0.12); }
+.btn-ghost:hover { border-color: rgba(255,255,255,0.3); }
+.btn-primary { background: linear-gradient(135deg, #4f8ef7, #7c5cfc); color: #fff; }
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(79,142,247,0.35); }
+
+.hero {
+  position: relative; z-index: 5;
+  text-align: center;
+  padding: 100px 20px 80px;
+  max-width: 800px; margin: 0 auto;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(79,142,247,0.1); border: 1px solid rgba(79,142,247,0.2);
+  padding: 6px 16px; border-radius: 20px;
+  font-size: 0.8rem; color: #4f8ef7; font-weight: 600;
+  margin-bottom: 24px;
+}
+.hero h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 800; line-height: 1.05;
+  letter-spacing: -1.5px; margin-bottom: 20px;
+}
+.hero h1 span { background: linear-gradient(135deg, #4f8ef7, #7c5cfc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero p { font-size: 1.1rem; color: rgba(232,234,240,0.6); max-width: 520px; margin: 0 auto 40px; line-height: 1.7; }
+.hero-cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+/* Role cards */
+.roles {
+  position: relative; z-index: 5;
+  display: flex; gap: 20px; justify-content: center;
+  padding: 0 40px 80px;
+  flex-wrap: wrap;
+}
+.role-card {
+  border-radius: 16px;
+  padding: 32px;
+  width: 340px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+.role-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+}
+.role-card:hover { transform: translateY(-4px); }
+.role-card.mentor-card { background: linear-gradient(135deg, rgba(79,142,247,0.1), rgba(124,92,252,0.08)); }
+.role-card.mentee-card { background: linear-gradient(135deg, rgba(212,98,42,0.1), rgba(245,158,11,0.08)); }
+.role-icon { font-size: 2.5rem; margin-bottom: 16px; }
+.role-card h3 { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; margin-bottom: 8px; }
+.role-card p { font-size: 0.9rem; color: rgba(232,234,240,0.55); line-height: 1.6; margin-bottom: 20px; }
+.role-features { list-style: none; }
+.role-features li { font-size: 0.82rem; color: rgba(232,234,240,0.6); padding: 4px 0; display: flex; align-items: center; gap: 8px; }
+.role-features li::before { content: '✓'; color: #22c55e; font-weight: 700; }
+.role-cta {
+  margin-top: 20px;
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.85rem; font-weight: 700;
+  color: #4f8ef7; text-decoration: none;
+}
+.mentee-card .role-cta { color: #f59e0b; }
+.role-cta i { font-size: 0.75rem; }
+
+/* features */
+.features { position: relative; z-index: 5; padding: 20px 60px 80px; }
+.features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; max-width: 1000px; margin: 0 auto; }
+.feature-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px; padding: 24px;
+}
+.feature-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; margin-bottom: 14px; }
+.feature-card h4 { font-family: 'Syne', sans-serif; font-weight: 700; margin-bottom: 6px; font-size: 0.95rem; }
+.feature-card p { font-size: 0.83rem; color: rgba(232,234,240,0.45); line-height: 1.6; }
+
+.demo-hint {
+  position: relative; z-index: 5;
+  text-align: center; padding: 0 20px 60px;
+  background: rgba(79,142,247,0.04);
+  border: 1px solid rgba(79,142,247,0.1);
+  max-width: 480px; margin: 0 auto 60px;
+  border-radius: 14px; padding: 24px;
+}
+.demo-hint code { background: rgba(255,255,255,0.07); padding: 3px 8px; border-radius: 4px; font-size: 0.82rem; }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.fade-up { animation: fadeUp 0.6s ease both; }
+.d1 { animation-delay: 0.05s; } .d2 { animation-delay: 0.15s; } .d3 { animation-delay: 0.25s; } .d4 { animation-delay: 0.35s; }
+
+@media (max-width: 768px) {
+  nav { padding: 16px 20px; }
+  .hero { padding: 60px 20px 40px; }
+  .roles { padding: 0 20px 60px; }
+  .features { padding: 20px 20px 60px; }
+  .features-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow glow-1"></div>
+<div class="bg-glow glow-2"></div>
+
+<nav>
+  <div class="nav-logo">Mentor<span>Connect</span> 🌉</div>
+  <div class="nav-actions">
+    <a href="{{ url_for('login') }}" class="btn btn-ghost">Sign In</a>
+    <a href="{{ url_for('register') }}" class="btn btn-primary">Get Started</a>
+  </div>
+</nav>
+
+<div class="hero fade-up">
+  <div class="hero-badge"><i class="fas fa-star"></i> Mentorship Platform</div>
+  <h1>Bridge the gap between <span>mentor & mentee</span></h1>
+  <p>A full-featured platform for structured mentorship — raise issues, track progress, and communicate in one place.</p>
+  <div class="hero-cta">
+    <a href="{{ url_for('register') }}" class="btn btn-primary"><i class="fas fa-rocket"></i> Get Started Free</a>
+    <a href="{{ url_for('login') }}" class="btn btn-ghost"><i class="fas fa-sign-in-alt"></i> Sign In</a>
+  </div>
+</div>
+
+<div class="roles fade-up d2">
+  <a href="{{ url_for('login') }}" class="role-card mentor-card">
+    <div class="role-icon">🎓</div>
+    <h3>Mentor</h3>
+    <p>Guide, manage, and track your mentees' progress with powerful admin tools.</p>
+    <ul class="role-features">
+      <li>Manage all mentee issues</li>
+      <li>Update issue status & assign tasks</li>
+      <li>Post announcements</li>
+      <li>Direct messaging</li>
+      <li>User management panel</li>
+    </ul>
+    <div class="role-cta">Login as Mentor <i class="fas fa-arrow-right"></i></div>
+  </a>
+  <a href="{{ url_for('login') }}" class="role-card mentee-card">
+    <div class="role-icon">🌱</div>
+    <h3>Mentee</h3>
+    <p>Raise issues, track your progress, and learn from your mentor.</p>
+    <ul class="role-features">
+      <li>Raise and track issues</li>
+      <li>View mentor updates</li>
+      <li>Read announcements</li>
+      <li>Direct messaging</li>
+      <li>Personal dashboard</li>
+    </ul>
+    <div class="role-cta">Login as Mentee <i class="fas fa-arrow-right"></i></div>
+  </a>
+</div>
+
+<div class="features fade-up d3">
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(79,142,247,0.15);color:#4f8ef7"><i class="fas fa-exclamation-circle"></i></div>
+      <h4>Issue Tracking</h4>
+      <p>Raise problems with priority levels, track their status from open to resolved.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(34,197,94,0.15);color:#22c55e"><i class="fas fa-comments"></i></div>
+      <h4>Direct Messaging</h4>
+      <p>Real-time conversations between mentors and mentees, all in one thread.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(245,158,11,0.15);color:#f59e0b"><i class="fas fa-bullhorn"></i></div>
+      <h4>Announcements</h4>
+      <p>Mentors can post pinned announcements visible to all mentees instantly.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(124,92,252,0.15);color:#7c5cfc"><i class="fas fa-chart-bar"></i></div>
+      <h4>Analytics Dashboard</h4>
+      <p>Track open, in-progress, and resolved issues at a glance.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(239,68,68,0.15);color:#ef4444"><i class="fas fa-users"></i></div>
+      <h4>User Management</h4>
+      <p>Mentors can view, activate or deactivate mentee accounts as admin.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(212,98,42,0.15);color:#d4622a"><i class="fas fa-shield-alt"></i></div>
+      <h4>Role-Based Access</h4>
+      <p>Two separate interfaces: mentor (admin) and mentee (user) with distinct permissions.</p>
+    </div>
+  </div>
+</div>
+
+<div class="demo-hint fade-up d4">
+  <h4 style="font-family:'Syne',sans-serif;margin-bottom:10px;">🔑 Demo Accounts</h4>
+  <p style="font-size:0.83rem;color:rgba(232,234,240,0.5);margin-bottom:8px;">Mentor: <code>mentor@demo.com</code> / <code>mentor123</code></p>
+  <p style="font-size:0.83rem;color:rgba(232,234,240,0.5);">Mentee: <code>mentee@demo.com</code> / <code>mentee123</code></p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Raise Issue — MentorBridge{% endblock %}
+{% block page_title %}Raise an Issue{% endblock %}
+
+{% block content %}
+<div class="page-header fade-up">
+  <h2>Raise an Issue</h2>
+  <p>Describe your problem clearly so your mentor can help you effectively</p>
+</div>
+
+<div class="card fade-up delay-1" style="max-width:680px">
+  <div class="card-header">
+    <span><i class="fas fa-exclamation-circle" style="margin-right:8px;opacity:0.5"></i>Issue Details</span>
+  </div>
+  <div class="card-body">
+    <form method="POST">
+      <div class="form-group">
+        <label class="form-label">Issue Title *</label>
+        <div style="position:relative">
+          <input type="text" name="title" class="input-field" placeholder="Brief, descriptive title of your problem" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Description *</label>
+        <textarea name="description" class="input-field" rows="5" placeholder="Describe the issue in detail. Include what you tried, what happened, and what you expected..." required></textarea>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="form-group">
+          <label class="form-label">Priority</label>
+          <select name="priority" class="input-field">
+            <option value="low">🟢 Low</option>
+            <option value="medium" selected>🟡 Medium</option>
+            <option value="high">🔴 High</option>
+            <option value="urgent">🚨 Urgent</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select name="category" class="input-field">
+            <option value="general">General</option>
+            <option value="technical">Technical</option>
+            <option value="career">Career</option>
+            <option value="learning">Learning</option>
+            <option value="project">Project</option>
+            <option value="personal">Personal</option>
+          </select>
+        </div>
+      </div>
+
+      {% if mentors %}
+      <div class="form-group">
+        <label class="form-label">Assign to Mentor (optional)</label>
+        <select name="assigned_to" class="input-field">
+          <option value="">Select a mentor...</option>
+          {% for mentor in mentors %}
+          <option value="{{ mentor.id }}">{{ mentor.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      {% endif %}
+
+      <div class="flex gap-2 mt-2">
+        <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Submit Issue</button>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

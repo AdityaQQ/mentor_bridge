@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Profile — MentorBridge{% endblock %}
+{% block page_title %}My Profile{% endblock %}
+{% block content %}
+<div class="page-header fade-up">
+  <h2>Profile</h2>
+  <p>Manage your account information</p>
+</div>
+<div class="grid-2 fade-up delay-1" style="grid-template-columns:280px 1fr;align-items:start">
+  <!-- Avatar Card -->
+  <div class="card" style="text-align:center">
+    <div class="card-body" style="padding:32px 24px">
+      <div class="avatar-lg" style="margin:0 auto 16px">{{ user.avatar_initial or user.name[0] }}</div>
+      <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;margin-bottom:4px">{{ user.name }}</div>
+      <span class="badge-role">{{ user.role.title() }}</span>
+      <div class="text-muted text-sm mt-1" style="margin-top:8px">{{ user.email }}</div>
+      <div class="text-muted text-sm mt-1">Joined {{ user.created_at.strftime('%b %Y') }}</div>
+      {% if user.expertise %}
+      <div style="margin-top:16px;padding:12px;border-radius:8px;font-size:0.82rem;line-height:1.6"
+           class="{% if session.get('role')=='mentor' %}{% endif %}">
+        <div style="font-weight:700;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.5px;opacity:0.5;margin-bottom:6px">Expertise</div>
+        {{ user.expertise }}
+      </div>
+      {% endif %}
+      <div class="mt-2">
+        <a href="{{ url_for('messages') }}" class="btn btn-primary btn-sm" style="width:100%;justify-content:center">
+          <i class="fas fa-comments"></i> Messages
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Form -->
+  <div class="card">
+    <div class="card-header"><span><i class="fas fa-edit" style="margin-right:8px;opacity:0.5"></i>Edit Profile</span></div>
+    <div class="card-body">
+      <form method="POST" action="{{ url_for('edit_profile') }}">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" name="name" class="input-field" value="{{ user.name }}" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="input-field" value="{{ user.email }}" disabled style="opacity:0.4;cursor:not-allowed">
+          <div class="text-muted text-sm mt-1">Email cannot be changed</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Expertise / Skills</label>
+          <input type="text" name="expertise" class="input-field" value="{{ user.expertise }}" placeholder="Python, Data Science...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Bio</label>
+          <textarea name="bio" class="input-field" rows="4" placeholder="Tell us about yourself...">{{ user.bio }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Changes</button>
+      </form>
+      <div style="margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.08)">
+        <a href="{{ url_for('change_password') }}" class="btn btn-outline" style="color:inherit"><i class="fas fa-lock"></i> Change Password</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
