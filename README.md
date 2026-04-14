@@ -1,59 +1,90 @@
 # 🚀 MentorConnect
 
-A full-stack mentorship platform that connects mentors and mentees, enabling seamless communication, scheduling, and progress tracking.
+A full-stack mentorship platform that connects mentors and mentees, enabling seamless communication, issue tracking, session management, and progress monitoring.
+
+🌐 **Live Demo:**
+https://mentor-bridge-1.vercel.app
 
 ---
 
-## 🌟 Features
+# 🌟 Features
 
-* 🔐 User Authentication (Login/Register)
-* 👨‍🏫 Role-based dashboards (Mentor & Mentee)
-* 📊 Interactive Dashboard UI
-* 📅 Session Scheduling System
-* 💬 Communication between users
-* 🗂️ Organized mentor/mentee management
+## 👨‍🏫 Mentor Features
+
+* Manage mentees
+* Assign & resolve issues
+* Post announcements
+* View analytics dashboard
+* Add session notes
+* Monitor progress
+
+## 🎓 Mentee Features
+
+* Raise issues
+* Track issue status
+* Chat with mentors
+* View announcements
+* Track learning progress
+
+## ⚙️ Core Features
+
+* 🔐 Authentication system
+* 👥 Role-based dashboards
+* 📊 Analytics Dashboard
+* 💬 Messaging System
+* 📅 Session Notes
+* 🔔 Notification System
+* 🔍 Search functionality
+* 📱 Responsive UI
 
 ---
 
-## 🛠️ Tech Stack
+# 🛠️ Tech Stack
 
-**Frontend**
+## Frontend
 
 * HTML
 * CSS
 * JavaScript
 
-**Backend**
+## Backend
 
 * Flask (Python)
+* SQLAlchemy
 
-**Database**
+## Database
 
 * SQLite
 
+## Deployment
+
+* Vercel (Serverless Python)
+
 ---
 
-## 📂 Project Structure
+# 📂 Project Structure
 
-```
 mentor_bridge/
-│── mentor_app/
+│
+├── api/
+│   └── index.py
+│
+├── mentor_app/
 │   ├── templates/
 │   ├── static/
-│   ├── routes/
-│   └── models/
+│   └── app.py
 │
-│── instance/
-│── requirements.txt
-│── README.md
-```
+├── screenshots/
+├── requirements.txt
+├── vercel.json
+└── README.md
 
 ---
 
-## ⚙️ Installation & Setup
+# ⚙️ Installation & Setup
 
 ```bash
-# Clone the repository
+# Clone repository
 git clone https://github.com/AdityaQQ/mentor_bridge.git
 
 # Navigate to project
@@ -62,46 +93,55 @@ cd mentor_bridge
 # Create virtual environment
 python -m venv venv
 
-# Activate venv
-venv\Scripts\activate   # Windows
+# Activate environment (Windows)
+venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
 
-# Run the app
+# Run project
 python app.py
 ```
 
 ---
 
-## 📸 Screenshots
+# 📸 Screenshots
 
-*Add your project screenshots here (dashboard, login, etc.)*
+## 🔐 Login Page
+
+![Login](screenshots/login.png)
+
+## 📝 Account Creation
+
+![Account Creation](screenshots/accountcreation.png)
+
+## 👨‍🏫 Mentor Dashboard
+
+![Dashboard](screenshots/dashboard.png)
+
+## 🎓 Mentee Dashboard
+
+![Mentee Dashboard](screenshots/menteedashboard.png)
 
 ---
 
-## 🚀 Future Improvements
+# 🚀 Future Improvements
 
-* 🔔 Notifications system
-* 📈 Analytics dashboard
-* 🌐 Deployment (Render/Vercel)
-* 📱 Mobile responsiveness
-
----
-
-## 🤝 Contributing
-
-Feel free to fork this repo and contribute!
+* 📱 Mobile App
+* 📅 Calendar Integration
+* 📧 Email Notifications
+* 🤖 AI Mentor Suggestions
+* 📈 Advanced Analytics
 
 ---
 
-## 👨‍💻 Author
+# 👨‍💻 Author
 
-**Aditya**
+**Aditya Upadhyay**
 GitHub: https://github.com/AdityaQQ
 
 ---
 
-## ⭐ If you like this project
+# ⭐ Support
 
-Give it a ⭐ on GitHub!
+If you like this project, give it a ⭐ on GitHub!
