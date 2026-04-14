@@ -160,10 +160,7 @@ def inject_notifications():
 
 @app.route('/')
 def index():
-    if 'user_id' in session:
-        return redirect(url_for('dashboard'))
-    return render_template('landing.html')
-
+    return redirect('/dashboard')
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
