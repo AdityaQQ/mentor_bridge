@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "mentor_app/app.py", "use": "@vercel/python" }
+  ],
+  "routes": [
+    { "src": "/(.*)", "dest": "mentor_app/app.py" }
+  ]
+}
