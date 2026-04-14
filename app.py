@@ -5,7 +5,11 @@ from datetime import datetime, timedelta
 from collections import defaultdict
 import os
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    template_folder="mentor_app/templates",
+    static_folder="mentor_app/static"
+)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'mentor-mentee-secret-key-2024')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///mentor_app.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
