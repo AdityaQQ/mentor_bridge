@@ -1,0 +1,1 @@
+from mentor_app.app import app
