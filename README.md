@@ -1,147 +1,130 @@
-# 🚀 MentorConnect
+# 🚀 MentorBridge — Mentor-Mentee Connection Platform
 
-A full-stack mentorship platform that connects mentors and mentees, enabling seamless communication, issue tracking, session management, and progress monitoring.
+## 🔥 Overview
 
-🌐 **Live Demo:**
-https://mentor-bridge-1.vercel.app
-
----
-
-# 🌟 Features
-
-## 👨‍🏫 Mentor Features
-
-* Manage mentees
-* Assign & resolve issues
-* Post announcements
-* View analytics dashboard
-* Add session notes
-* Monitor progress
-
-## 🎓 Mentee Features
-
-* Raise issues
-* Track issue status
-* Chat with mentors
-* View announcements
-* Track learning progress
-
-## ⚙️ Core Features
-
-* 🔐 Authentication system
-* 👥 Role-based dashboards
-* 📊 Analytics Dashboard
-* 💬 Messaging System
-* 📅 Session Notes
-* 🔔 Notification System
-* 🔍 Search functionality
-* 📱 Responsive UI
+MentorBridge is a full-stack web application built by **Aditya Upadhyay** that enables structured connections between mentors and mentees.
+The platform allows users to create accounts, access dashboards, exchange messages, and manage mentorship interactions in an organized way.
 
 ---
 
-# 🛠️ Tech Stack
+## ✨ Features
 
-## Frontend
-
-* HTML
-* CSS
-* JavaScript
-
-## Backend
-
-* Flask (Python)
-* SQLAlchemy
-
-## Database
-
-* SQLite
-
-## Deployment
-
-* Vercel (Serverless Python)
+* 🔐 User Authentication (Login / Signup)
+* 📝 Account Creation System
+* 📊 Centralized Dashboard
+* 🧑‍🎓 Mentee Dashboard
+* 💬 Messaging System between users
+* 📢 Announcement Section
+* 🔗 Mentor–Mentee Connection Flow
 
 ---
 
-# 📂 Project Structure
+## 🛠 Tech Stack
 
-mentor_bridge/
-│
-├── api/
-│   └── index.py
-│
-├── mentor_app/
-│   ├── templates/
-│   ├── static/
-│   └── app.py
-│
-├── screenshots/
-├── requirements.txt
-├── vercel.json
-└── README.md
+* **Backend:** Flask (Python)
+* **Frontend:** HTML, CSS, JavaScript (Jinja Templates)
+* **Database:** SQLite
+* **Deployment:** Render
 
 ---
 
-# ⚙️ Installation & Setup
+## 🗄 Database
 
-```bash
-# Clone repository
-git clone https://github.com/AdityaQQ/mentor_bridge.git
-
-# Navigate to project
-cd mentor_bridge
-
-# Create virtual environment
-python -m venv venv
-
-# Activate environment (Windows)
-venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Run project
-python app.py
-```
+* Stores user credentials and profiles
+* Supports mentor–mentee interactions
+* Managed using SQLite for lightweight deployment
 
 ---
 
-# 📸 Screenshots
+## 📸 Screenshots
 
-## 🔐 Login Page
+### 🔐 Login Page
 
 ![Login](screenshots/login.png)
 
-## 📝 Account Creation
+---
+
+### 📝 Account Creation
 
 ![Account Creation](screenshots/accountcreation.png)
 
-## 👨‍🏫 Mentor Dashboard
+---
+
+### 📊 Dashboard
 
 ![Dashboard](screenshots/dashboard.png)
 
-## 🎓 Mentee Dashboard
+---
+
+### 🧑‍🎓 Mentee Dashboard
 
 ![Mentee Dashboard](screenshots/menteedashboard.png)
 
 ---
 
-# 🚀 Future Improvements
+### 💬 Messaging System
 
-* 📱 Mobile App
-* 📅 Calendar Integration
-* 📧 Email Notifications
-* 🤖 AI Mentor Suggestions
-* 📈 Advanced Analytics
+![Messaging](screenshots/message.png)
 
 ---
 
-# 👨‍💻 Author
+### 📢 Announcements
+
+![Announcements](screenshots/announcement.png)
+
+---
+
+## 🚀 Live Demo
+
+👉 https://mentor-bridge-iced.onrender.com/login
+
+---
+
+## ⚙️ Installation
+
+```bash id="f9o2xy"
+git clone https://github.com/AdityaQQ/mentor_bridge.git
+cd mentor_bridge
+pip install -r requirements.txt
+python app.py
+```
+
+---
+
+## 🔑 Environment Variables
+
+```id="v8k2zm"
+SECRET_KEY=your_secret_key
+```
+
+---
+
+## 🧠 System Flow
+
+1. User signs up or logs in
+2. Creates an account profile
+3. Accesses dashboard
+4. Connects with mentor/mentee
+5. Communicates via messaging system
+6. Views announcements and updates
+
+---
+
+## 📌 Future Improvements
+
+* Role-based dashboards (mentor vs mentee)
+* Real-time chat system
+* Smart mentor matching system
+* Notification & scheduling system
+
+---
+
+## 👨‍💻 Author
 
 **Aditya Upadhyay**
-GitHub: https://github.com/AdityaQQ
+B.Tech Computer Science
+Kalinga Institute of Industrial Technology (KIIT)
 
 ---
 
-# ⭐ Support
-
-If you like this project, give it a ⭐ on GitHub!
+⭐ Star this repo if you found it useful!
